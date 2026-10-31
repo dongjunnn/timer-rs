@@ -1,5 +1,6 @@
 use serde::Deserialize;
 use std::collections::HashMap;
+use std::io::Write;
 use std::io;
 use std::thread;
 use std::time::{Duration, Instant};
@@ -14,10 +15,12 @@ struct Font {
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let text = std::fs::read_to_string("assets/fonts.json")?;
     let fonts: HashMap<String, Font> = serde_json::from_str(&text)?;
+    print!("Time: ");
+    io::stdout().flush()?;
     let mut input = String::new();
     let font = fonts
         .into_values()
-        .find(|f| f.height == 7)
+        .find(|f| f.height == 5)
         .ok_or("no font with height 7")?;
     io::stdin()
         .read_line(&mut input)
@@ -27,7 +30,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let n: u64 = match input.parse::<u64>() {
         Ok(n) => {
-            println!("Got {n}");
             n
         }
         Err(e) => {
@@ -41,7 +43,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     loop {
         let remaining = deadline.saturating_duration_since(Instant::now());
 
-        let secs = (remaining.as_millis() + 999) / 1000;
+        let secs = remaining.as_millis().div_ceil(1000);
         let digits = secs.to_string();
         if !first {
             print!("\x1b[{}A", font.height);
@@ -65,5 +67,5 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         thread::sleep(remaining.min(Duration::from_millis(250)));
     }
 
-    return Ok(());
+    Ok(())
 }
