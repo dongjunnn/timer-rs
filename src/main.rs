@@ -1,7 +1,7 @@
 use serde::Deserialize;
 use std::collections::HashMap;
-use std::io::Write;
 use std::io;
+use std::io::Write;
 use std::thread;
 use std::time::{Duration, Instant};
 
@@ -29,9 +29,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let input = input.trim();
 
     let n: u64 = match input.parse::<u64>() {
-        Ok(n) => {
-            n
-        }
+        Ok(n) => n,
         Err(e) => {
             eprintln!("Not a valid number: {e}");
             return Ok(());
